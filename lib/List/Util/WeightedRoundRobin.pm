@@ -1,6 +1,6 @@
 package List::Util::WeightedRoundRobin;
 
-$VERSION = 0.1;
+$VERSION = 0.2;
 
 use strict;
 
@@ -8,24 +8,24 @@ use strict;
 sub new {
     my $class = shift;
 
-    my $self = {
-        weighted_list   => [],
-    };
+    my $self = {};
     bless $self, $class;
 
     return( $self );
 };
 
 
-sub initialize_sources {
+sub create_weighted_list {
     my $self = shift;
     my $sources = shift;
+
+    my $weighted_list = [];
 
     # The weighting of one source is a list 
     # containing only that source
     if( @{$sources} == 1 ) {
-        $self->{weighted_list} = [ $sources->[0]->{name} ];
-        return( 1 );
+        $weighted_list = [ $sources->[0]->{name} ];
+        return( $weighted_list );
     };
 
     $sources = $self->_reduce_and_sort_weightings( $sources );
@@ -37,23 +37,20 @@ sub initialize_sources {
         # If we haven't yet added elements, add all of the first source
         unless( $total_weight ) {
             for( my $count = 0; $count < $source->{weight}; $count++ ) {
-                push @{$self->{weighted_list}}, $source->{name};
+                push @{$weighted_list}, $source->{name};
             };
             next;
         };
 
         for( my $count = $source->{weight}; $count > 0; $count-- ) {
             my $tmp = sprintf( "%.f", $count * $frequency );
-            splice( @{$self->{weighted_list}}, $tmp, 0, $source->{name} );
+            splice( @{$weighted_list}, $tmp, 0, $source->{name} );
         };
 
     };
 
-    return( 1 );
+    return( $weighted_list );
 };
-
-
-sub get_list { return( $_[0]->{weighted_list} ) };
 
 
 sub _reduce_and_sort_weightings {
@@ -96,3 +93,61 @@ sub multigcf {
 };
 
 1;
+
+=head1 NAME
+
+List::Util::WeightedRoundRobin - Creates a list based on weighted input
+
+=head1 SYNOPSIS
+
+  my $list = [
+    {
+        name    => 'jingle',
+        weight  => 6,
+    },
+    {
+        name    => 'bells',
+        weight  => 2,
+    },
+  ];
+
+  my $WeightedList = List::Util::WeightedRoundRobin->new();
+
+  if( $WeightedList->initialize_sources($slim_geocoders) ) {
+    $weighted_list = $WeightedList->get_list();
+  };
+    
+=head1 DESCRIPTION
+
+C<List::Util::WeightedRoundRobin> is a utility for creating a weighted list
+based on the input and associated weights.
+
+=head1 METHOD
+
+=over 4
+
+=head2 new
+
+Constructs a new C<List::Util::WeightedRoundRobin> and returns it. Takes no
+arguments.
+
+=head2 create_weighted_list
+
+Takes an array reference as an argument. The array reference must contain
+hash entries which have a 'name' and 'weight' key.
+
+If the sources are valid and a weighted list has been created, the method will
+return a weighted list. In the case of an error, the returned list will be 
+empty.
+
+=head1 AUTHOR
+
+Alistair Francis, http://search.cpan.org/~friffin/
+
+=head1 COPYRIGHT AND LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself, either Perl version 5.10 or,
+at your option, any later version of Perl 5 you may have available.
+
+=cut
