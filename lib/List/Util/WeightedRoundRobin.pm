@@ -1,6 +1,6 @@
 package List::Util::WeightedRoundRobin;
 
-$VERSION = 0.2;
+$VERSION = 0.3;
 
 use strict;
 
@@ -31,7 +31,7 @@ sub create_weighted_list {
     $sources = $self->_reduce_and_sort_weightings( $sources );
 
     foreach my $source ( @{$sources} ) {
-        my $total_weight = scalar @{$self->{weighted_list}};
+        my $total_weight = scalar @{$weighted_list};
         my $frequency = $total_weight / $source->{weight};
 
         # If we haven't yet added elements, add all of the first source
