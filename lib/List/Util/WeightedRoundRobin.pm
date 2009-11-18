@@ -1,6 +1,6 @@
 package List::Util::WeightedRoundRobin;
 
-$VERSION = 0.3;
+$VERSION = 0.4;
 
 use strict;
 
@@ -112,10 +112,7 @@ List::Util::WeightedRoundRobin - Creates a list based on weighted input
   ];
 
   my $WeightedList = List::Util::WeightedRoundRobin->new();
-
-  if( $WeightedList->initialize_sources($slim_geocoders) ) {
-    $weighted_list = $WeightedList->get_list();
-  };
+  my $weighted_list = $WeightedList->create_weighted_list( $list );
     
 =head1 DESCRIPTION
 
